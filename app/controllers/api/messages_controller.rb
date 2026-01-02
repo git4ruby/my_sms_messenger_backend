@@ -31,7 +31,7 @@ class Api::MessagesController < ApplicationController
   private
 
   def message_params
-    params.permit(:to, :body)
+    params.require(:message).permit(:to, :body)
   end
 
   def webhook_url

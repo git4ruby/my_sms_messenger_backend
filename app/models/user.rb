@@ -36,6 +36,10 @@ class User
   # field :locked_at,       type: Time
   include Mongoid::Timestamps
 
+  def self.primary_key
+    :_id
+  end
+
   has_many :messages
 
   validates :email, presence: true, uniqueness: true
