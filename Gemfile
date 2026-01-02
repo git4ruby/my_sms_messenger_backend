@@ -24,6 +24,8 @@ gem 'mongoid'
 gem 'twilio-ruby'
 gem 'rack-cors'
 gem 'devise'
+gem 'jwt'
+gem 'devise-jwt'
 gem 'dotenv-rails', groups: [:development, :test]
 
 

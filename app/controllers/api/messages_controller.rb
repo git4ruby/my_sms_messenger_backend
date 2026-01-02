@@ -1,7 +1,8 @@
 class Api::MessagesController < ApplicationController
+  before_action :authenticate_user!
   def index
-    messages = current_user.messages
-    render json: messages.order(created_at: :desc)
+    messages = current_user.messages.order(created_at: :desc)
+    render json: messages
   end
 
   def create
@@ -12,14 +13,14 @@ class Api::MessagesController < ApplicationController
 
     sms = twilio.messages.create(
       from: ENV['TWILIO_PHONE_NUMBER'],
-      to: params[:to],
-      body: params[:body],
-      status_callback: "#{ENV['BASE_URL']}/api/twilio/status"
+      to: message_params[:to],
+      body: message_params[:body],
+      status_callback: webhook_url
     )
 
     message = current_user.messages.create!(
-      to: params[:to],
-      body: params[:body],
+      to: message_params[:to],
+      body: message_params[:body],
       twilio_sid: sms.sid,
       status: sms.status
     )
@@ -28,6 +29,10 @@ class Api::MessagesController < ApplicationController
   end
 
   private
+
+  def message_params
+    params.permit(:to, :body)
+  end
 
   def webhook_url
     "#{ENV['BASE_URL']}/api/twilio/status"
