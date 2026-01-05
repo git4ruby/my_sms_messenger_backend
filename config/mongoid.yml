@@ -21,4 +21,6 @@ production:
     default:
       uri: <%= ENV['MONGODB_URI'] %>
       options:
-        server_selection_timeout: 5
+        server_selection_timeout: 15
+        retry_writes: true
+        ssl: true
