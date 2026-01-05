@@ -22,4 +22,7 @@ production:
       uri: <%= ENV['MONGODB_URI'] %>
       options:
         server_selection_timeout: 15
-        retry_writes: true
+        connect_timeout: 30
+        socket_timeout: 30
+        ssl_verify_cert_chain: false
+        ssl_verify_hostname: false
