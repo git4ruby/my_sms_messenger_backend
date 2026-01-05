@@ -21,8 +21,6 @@ production:
     default:
       uri: <%= ENV['MONGODB_URI'] %>
       options:
-        server_selection_timeout: 15
+        server_selection_timeout: 30
         connect_timeout: 30
         socket_timeout: 30
-        ssl_verify_cert_chain: false
-        ssl_verify_hostname: false
