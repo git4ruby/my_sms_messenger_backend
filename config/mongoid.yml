@@ -21,9 +21,5 @@ production:
     default:
       uri: <%= ENV['MONGODB_URI'] %>
       options:
-        ssl: true
-        tls: true
-        tls_minimum_version: "TLS1.2"
         server_selection_timeout: 5
         retry_writes: true
-        connect_timeout: 10
