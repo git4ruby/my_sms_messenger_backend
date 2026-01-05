@@ -5,32 +5,27 @@ if Rails.env.production?
   require 'openssl'
   require 'mongo'
 
-  # Create a custom SSL context that works with MongoDB Atlas
-  ssl_context = OpenSSL::SSL::SSLContext.new
-  ssl_context.verify_mode = OpenSSL::SSL::VERIFY_NONE
-  ssl_context.set_params(
-    verify_mode: OpenSSL::SSL::VERIFY_NONE,
-    min_version: OpenSSL::SSL::TLS1_2_VERSION
-  )
+  # Patch OpenSSL defaults globally for MongoDB connections
+  OpenSSL::SSL::SSLContext::DEFAULT_PARAMS[:verify_mode] = OpenSSL::SSL::VERIFY_NONE
+  OpenSSL::SSL::SSLContext::DEFAULT_PARAMS[:min_version] = OpenSSL::SSL::TLS1_2_VERSION
 
-  # Monkey patch the Mongo client to use our custom SSL context
-  module Mongo
-    class Socket
-      class SSL < Socket
-        private
+  # Patch the Mongo driver's SSL context creation
+  Mongo::Socket::SSL.class_eval do
+    private
 
-        def create_context(options = {})
-          context = OpenSSL::SSL::SSLContext.new
-          context.verify_mode = OpenSSL::SSL::VERIFY_NONE
-          context.set_params(
-            verify_mode: OpenSSL::SSL::VERIFY_NONE,
-            min_version: OpenSSL::SSL::TLS1_2_VERSION
-          )
-          context
-        end
-      end
+    def create_context(options = {})
+      context = OpenSSL::SSL::SSLContext.new
+      context.verify_mode = OpenSSL::SSL::VERIFY_NONE
+      context.min_version = OpenSSL::SSL::TLS1_2_VERSION
+      context.max_version = OpenSSL::SSL::TLS1_3_VERSION
+      # Disable all SSL/TLS compression to avoid CRIME attacks
+      context.options |= OpenSSL::SSL::OP_NO_COMPRESSION if defined?(OpenSSL::SSL::OP_NO_COMPRESSION)
+      context
     end
   end
+
+  Rails.logger.info "OpenSSL Version: #{OpenSSL::OPENSSL_VERSION}"
+  Rails.logger.info "OpenSSL Library Version: #{OpenSSL::OPENSSL_LIBRARY_VERSION}"
 end
 
 Mongoid.configure do
