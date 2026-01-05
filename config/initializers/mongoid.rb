@@ -19,7 +19,7 @@ if Rails.env.production?
       class SSL < Socket
         private
 
-        def create_context
+        def create_context(options = {})
           context = OpenSSL::SSL::SSLContext.new
           context.verify_mode = OpenSSL::SSL::VERIFY_NONE
           context.set_params(
