@@ -76,7 +76,7 @@ Rails.application.configure do
   # Only use :id for inspections in production.
   config.active_record.attributes_for_inspect = [ :id ]
 
-  config.hosts << "my-sms-messenger-backend.onrender.com"
+  config.hosts << "my-sms-messenger-backend-l41i.onrender.com"
 
   # Enable DNS rebinding protection and other `Host` header attacks.
   # config.hosts = [
