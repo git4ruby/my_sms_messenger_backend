@@ -23,4 +23,3 @@ production:
       options:
         server_selection_timeout: 15
         retry_writes: true
-        ssl: true
