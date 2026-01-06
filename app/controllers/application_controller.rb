@@ -1,21 +1,10 @@
 class ApplicationController < ActionController::API
-  attr_reader :current_user
+  before_action :configure_permitted_parameters, if: :devise_controller?
 
   protected
 
-  def authenticate_user!
-    auth_header = request.headers['Authorization']
-    token = auth_header&.split(' ')&.last
-
-    return render_unauthorized unless token
-
-    payload = JwtService.decode(token)
-    @current_user = User.find(payload['user_id'])
-  rescue JWT::DecodeError, Mongoid::Errors::DocumentNotFound
-    render_unauthorized
-  end
-
-  def render_unauthorized
-    render json: {error: 'Unauthorized' }, status: :unauthorized
+  def configure_permitted_parameters
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:email, :password, :password_confirmation])
+    devise_parameter_sanitizer.permit(:sign_in, keys: [:email, :password])
   end
 end
